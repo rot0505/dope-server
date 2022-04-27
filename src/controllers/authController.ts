@@ -4,6 +4,7 @@ import { User } from "../entities/UserEntity";
 import logger from "../helpers/logger";
 import * as matchmakerHelper from "../helpers/matchmakerHelper";
 import { Vector3 } from "../helpers/Vectors";
+import { QueryOrder, wrap } from '@mikro-orm/core';
 
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -69,7 +70,8 @@ export async function signUp(req: any, res: any) {
             user = userRepo.create({
                 address: req.body.address,
                 signature: signature,
-                score: 0
+                score: 0,
+                room: "Port1"
             });
 
             // // Match make the user into a room
@@ -148,11 +150,61 @@ export async function logIn(req: any, res: any) {
                     user: {
                         id: userCopy._id,
                         walletAddress: userCopy.address,
-                        score: userCopy.score
+                        score: userCopy.score,
+                        room: userCopy.room
                     }
                 }
             });
         }
+    }
+    catch (error) {
+        res.status(400).json({
+            error: true,
+            output: error
+        });
+    }
+}
+
+export async function updateRoom(req: any, res: any) {
+    try {
+        // Check if the necessary parameters exist
+        if (!req.body.address || !req.body.room) {
+
+            logger.error(`*** Update Room Error - Update room must have a wallet address and room!`);
+            throw "Update room must have a wallet address and room!";
+            return;
+        }
+
+        const userRepo = DI.em.fork().getRepository(User);
+
+
+        // Check if an account with the email already exists
+        const user = await userRepo.findOne({ address: req.body.address });
+
+        if (user) {
+
+            wrap(user).assign(req.body);
+            await userRepo.flush();
+
+            delete user.signature;
+
+            res.status(200).json({
+                error: false,
+                output: {
+                    user: {
+                        id: user._id,
+                        walletAddress: user.address,
+                        room: user.room
+                    }
+                }
+            });
+        }
+        else {
+            logger.error(`*** Update Error - User with that email already exists!`);
+            throw "User with that email already exists!";
+            return;
+        }
+
     }
     catch (error) {
         res.status(400).json({

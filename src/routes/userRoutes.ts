@@ -8,5 +8,6 @@ const router = express.Router();
 //router.post("/signup", authController.prepEmail, authController.signUp);
 router.post("/login", authController.logIn);
 router.post("/score", scoreController.updateScore);
+router.post("/room", authController.updateRoom);
 
 export default router;

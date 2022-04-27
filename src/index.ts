@@ -16,7 +16,7 @@ import { config } from "dotenv";
 
 const port = Number(process.env.PORT || 2566);
 
-// config({ path: path.join(__dirname, "../dra.env") });
+// config({ path: path.join(__dirname, "../arena.env") });
 
 // Create and listen on 2567 (or PORT environment variable.)
 listen(arenaConfig, port);

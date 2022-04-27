@@ -11,6 +11,7 @@ export class User extends BaseEntity {
     @Property() address!: string;
     @Property() signature!: string;
     @Property() score!: number;
+    @Property() room!: string;
 }
 
 
