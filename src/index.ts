@@ -14,7 +14,7 @@ import arenaConfig from "./arena.config";
 import path from "path";
 import { config } from "dotenv";
 
-const port = Number(process.env.PORT || 2566);
+const port = Number(process.env.PORT || 3002);
 
 // config({ path: path.join(__dirname, "../arena.env") });
 
