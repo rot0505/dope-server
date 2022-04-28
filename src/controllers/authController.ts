@@ -96,7 +96,9 @@ export async function signUp(req: any, res: any) {
             output: {
                 user: {
                     id: newUserObj._id,
-                    walletAddress: newUserObj.address
+                    walletAddress: newUserObj.address,
+                    score: newUserObj.score,
+                    room: newUserObj.room
                 }
             }
         });
