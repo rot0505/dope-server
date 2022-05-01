@@ -5,6 +5,7 @@ import logger from "../helpers/logger";
 import * as matchmakerHelper from "../helpers/matchmakerHelper";
 import { Vector3 } from "../helpers/Vectors";
 import { QueryOrder, wrap } from '@mikro-orm/core';
+import { MaterialState } from "../rooms/schema/MaterialState";
 
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -71,7 +72,14 @@ export async function signUp(req: any, res: any) {
                 address: req.body.address,
                 signature: signature,
                 score: 0,
-                room: "Port1"
+                room: "Port1",
+                material: new MaterialState().assign({
+                    food: 0,
+                    wood: 0,
+                    metal: 0,
+                    rock: 0,
+                    gold: 0
+                })
             });
 
             // // Match make the user into a room
@@ -98,7 +106,8 @@ export async function signUp(req: any, res: any) {
                     id: newUserObj._id,
                     walletAddress: newUserObj.address,
                     score: newUserObj.score,
-                    room: newUserObj.room
+                    room: newUserObj.room,
+                    material: newUserObj.material
                 }
             }
         });
@@ -153,7 +162,8 @@ export async function logIn(req: any, res: any) {
                         id: userCopy._id,
                         walletAddress: userCopy.address,
                         score: userCopy.score,
-                        room: userCopy.room
+                        room: userCopy.room,
+                        material: userCopy.material
                     }
                 }
             });

@@ -9,5 +9,6 @@ const router = express.Router();
 router.post("/login", authController.logIn);
 router.post("/score", scoreController.updateScore);
 router.post("/room", authController.updateRoom);
+router.post("/material", scoreController.updateMaterial);
 
 export default router;

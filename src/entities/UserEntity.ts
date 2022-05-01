@@ -1,6 +1,6 @@
 import { Entity, Property } from "@mikro-orm/core";
 import { Vector3 } from "../helpers/Vectors";
-import { AvatarState } from "../rooms/schema/AvatarState";
+import { MaterialState } from "../rooms/schema/MaterialState";
 import { BaseEntity } from './BaseEntity';
 
 /**
@@ -12,6 +12,7 @@ export class User extends BaseEntity {
     @Property() signature!: string;
     @Property() score!: number;
     @Property() room!: string;
+    @Property() material!: MaterialState;
 }
 
 
