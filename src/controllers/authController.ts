@@ -5,7 +5,8 @@ import logger from "../helpers/logger";
 import * as matchmakerHelper from "../helpers/matchmakerHelper";
 import { Vector3 } from "../helpers/Vectors";
 import { QueryOrder, wrap } from '@mikro-orm/core';
-import { MaterialState } from "../rooms/schema/MaterialState";
+import { MaterialState } from "../entities/schema/MaterialState";
+import { CannonD, MainD, MotorD, ShellD, ShipState } from "../entities/schema/ShipState";
 
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -79,6 +80,94 @@ export async function signUp(req: any, res: any) {
                     metal: 0,
                     rock: 0,
                     gold: 0
+                }),
+                shipData: new ShipState().assign({
+                    ShipName: "Ship3",
+                    MainData: [
+                        new MainD().assign({
+                            slotNum: 0,
+                            mainType: "Body1"
+                        })
+                    ],
+                    MotorData: [
+                        new MotorD().assign({
+                            slotNum: 0,
+                            motorType: "Sail1",
+                            health: 100
+                        }),
+                        new MotorD().assign({
+                            slotNum: 1,
+                            motorType: "Sail1",
+                            health: 100
+                        }),
+                        new MotorD().assign({
+                            slotNum: 2,
+                            motorType: "Sail1",
+                            health: 100
+                        }),
+                    ],
+                    CannonData: [
+                        new CannonD().assign({
+                            slotNum: 0,
+                            cannonType: null,
+                            health: 100
+                        }),
+                        new CannonD().assign({
+                            slotNum: 1,
+                            cannonType: null,
+                            health: 100
+                        }),
+                        new CannonD().assign({
+                            slotNum: 2,
+                            cannonType: "Cannon1",
+                            health: 100
+                        }),
+                        new CannonD().assign({
+                            slotNum: 3,
+                            cannonType: "Cannon1",
+                            health: 100
+                        }),
+                        new CannonD().assign({
+                            slotNum: 4,
+                            cannonType: "Cannon1",
+                            health: 100
+                        }),
+                        new CannonD().assign({
+                            slotNum: 5,
+                            cannonType: "Cannon1",
+                            health: 100
+                        }),
+                        new CannonD().assign({
+                            slotNum: 6,
+                            cannonType: "Cannon1",
+                            health: 100
+                        }),
+                        new CannonD().assign({
+                            slotNum: 7,
+                            cannonType: "Cannon1",
+                            health: 100
+                        }),
+                        new CannonD().assign({
+                            slotNum: 8,
+                            cannonType: "Cannon1",
+                            health: 100
+                        }),
+                        new CannonD().assign({
+                            slotNum: 9,
+                            cannonType: "Cannon1",
+                            health: 100
+                        }),
+                    ],
+                    ShellData: [
+                        new ShellD().assign({
+                            shellType: "Shell1",
+                            amount: 100
+                        }),
+                        new ShellD().assign({
+                            shellType: "Shell2",
+                            amount: 100
+                        })
+                    ]
                 })
             });
 
@@ -107,7 +196,14 @@ export async function signUp(req: any, res: any) {
                     walletAddress: newUserObj.address,
                     score: newUserObj.score,
                     room: newUserObj.room,
-                    material: newUserObj.material
+                    material: newUserObj.material,
+                    shipData: {
+                        ShipName: newUserObj.shipData.ShipName,
+                        MainData: newUserObj.shipData.MainData,
+                        MotorData: newUserObj.shipData.MotorData,
+                        CannonData: newUserObj.shipData.CannonData,
+                        ShellData: newUserObj.shipData.ShellData
+                    }
                 }
             }
         });
@@ -151,9 +247,9 @@ export async function logIn(req: any, res: any) {
                 return;
             }
 
-            await userRepo.flush();
-            let userCopy = { ...user };
-            delete userCopy.signature;
+            await userRepo.flush()
+            let userCopy = { ...user }
+            delete userCopy.signature
 
             res.status(200).json({
                 error: false,
@@ -163,10 +259,17 @@ export async function logIn(req: any, res: any) {
                         walletAddress: userCopy.address,
                         score: userCopy.score,
                         room: userCopy.room,
-                        material: userCopy.material
+                        material: userCopy.material,
+                        shipData: {
+                            ShipName: userCopy.shipData.ShipName,
+                            MainData: [...userCopy.shipData.MainData],
+                            MotorData: [...userCopy.shipData.MotorData],
+                            CannonData: [...userCopy.shipData.CannonData],
+                            ShellData: [...userCopy.shipData.ShellData]
+                        }
                     }
                 }
-            });
+            })
         }
     }
     catch (error) {
@@ -207,6 +310,62 @@ export async function updateRoom(req: any, res: any) {
                         id: user._id,
                         walletAddress: user.address,
                         room: user.room
+                    }
+                }
+            });
+        }
+        else {
+            logger.error(`*** Update Error - User with that email already exists!`);
+            throw "User with that email already exists!";
+            return;
+        }
+
+    }
+    catch (error) {
+        res.status(400).json({
+            error: true,
+            output: error
+        });
+    }
+}
+
+export async function updateShip(req: any, res: any) {
+
+    console.log("call update ship")
+    try {
+        // Check if the necessary parameters exist
+        if (!req.body.address || !req.body.shipData) {
+
+            logger.error(`*** Update Ship Error - Update ship must have a wallet address and ship data!`);
+            throw "Update ship must have a wallet address and ship!";
+            return;
+        }
+
+        const objShipData = JSON.parse(req.body.shipData)
+        delete req.body.shipData
+
+        req.body.shipData = objShipData
+
+        const userRepo = DI.em.fork().getRepository(User);
+
+
+        // Check if an account with the email already exists
+        const user = await userRepo.findOne({ address: req.body.address });
+
+        if (user) {
+
+            wrap(user).assign(req.body);
+            await userRepo.flush();
+
+            delete user.signature;
+
+            res.status(200).json({
+                error: false,
+                output: {
+                    user: {
+                        id: user._id,
+                        walletAddress: user.address,
+                        shipData: user.shipData
                     }
                 }
             });

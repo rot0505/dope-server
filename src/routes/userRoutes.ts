@@ -10,5 +10,6 @@ router.post("/login", authController.logIn);
 router.post("/score", scoreController.updateScore);
 router.post("/room", authController.updateRoom);
 router.post("/material", scoreController.updateMaterial);
+router.post("/ship", authController.updateShip);
 
 export default router;

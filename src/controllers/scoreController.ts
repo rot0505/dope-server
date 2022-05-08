@@ -4,7 +4,7 @@ import { User } from "../entities/UserEntity";
 import logger from "../helpers/logger";
 import * as matchmakerHelper from "../helpers/matchmakerHelper";
 import { QueryOrder, wrap } from '@mikro-orm/core';
-import { MaterialState } from "../rooms/schema/MaterialState";
+import { MaterialState } from "../entities/schema/MaterialState";
 
 export async function updateScore(req: any, res: any) {
     try {
@@ -36,7 +36,14 @@ export async function updateScore(req: any, res: any) {
                         id: user._id,
                         walletAddress: user.address,
                         score: user.score,
-                        material: user.material
+                        material: user.material,
+                        shipData: {
+                            ShipName: user.shipData.ShipName,
+                            MainData: user.shipData.MainData,
+                            MotorData: user.shipData.MotorData,
+                            CannonData: user.shipData.CannonData,
+                            ShellData: user.shipData.ShellData
+                        }
                     }
                 }
             });
@@ -101,7 +108,14 @@ export async function updateMaterial(req: any, res: any) {
                         id: user._id,
                         walletAddress: user.address,
                         score: user.score,
-                        material: user.material
+                        material: user.material,
+                        shipData: {
+                            ShipName: user.shipData.ShipName,
+                            MainData: user.shipData.MainData,
+                            MotorData: user.shipData.MotorData,
+                            CannonData: user.shipData.CannonData,
+                            ShellData: user.shipData.ShellData
+                        }
                     }
                 }
             });

@@ -1,7 +1,8 @@
 import { Entity, Property } from "@mikro-orm/core";
 import { Vector3 } from "../helpers/Vectors";
-import { MaterialState } from "../rooms/schema/MaterialState";
+import { MaterialState } from "./schema/MaterialState";
 import { BaseEntity } from './BaseEntity';
+import { ShipState } from "./schema/ShipState";
 
 /**
  * Entity to represent the user in the database and throughout the server 
@@ -13,6 +14,7 @@ export class User extends BaseEntity {
     @Property() score!: number;
     @Property() room!: string;
     @Property() material!: MaterialState;
+    @Property() shipData!: ShipState;
 }
 
 
